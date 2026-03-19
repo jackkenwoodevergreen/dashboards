@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visiting Day 2026 - Dashboard</title>
+<style>
+  :root {
+    --green: #2d6a4f;
+    --green-light: #d8f3dc;
+    --maroon: #6b2737;
+    --maroon-light: #f4e0e4;
+    --gold: #b5871a;
+    --gold-light: #fef3c7;
+    --blue: #1e40af;
+    --blue-light: #dbeafe;
+    --gray: #374151;
+    --gray-light: #f3f4f6;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --orange: #ea580c;
+    --orange-light: #ffedd5;
+    --bg: #fafaf9;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-hover: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+  /* HEADER */
+  .header { background: var(--green); color: white; padding: 28px 32px; position: sticky; top: 0; z-index: 100; }
+  .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .header-sub { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+  .header-meta { display: flex; gap: 24px; margin-top: 12px; font-size: 12px; }
+  .header-meta span { background: rgba(255,255,255,0.15); padding: 3px 10px; border-radius: 4px; }
+
+  /* NAV TABS */
+  .nav { display: flex; gap: 2px; background: var(--border); padding: 0; border-bottom: 1px solid var(--border); position: sticky; top: 96px; z-index: 99; }
+  .nav-tab { flex: 1; padding: 12px 16px; font-size: 13px; font-weight: 600; cursor: pointer; background: white; border: none; color: var(--text-muted); text-align: center; transition: all 0.15s; }
+  .nav-tab:hover { color: var(--green); background: var(--green-light); }
+  .nav-tab.active { color: var(--green); border-bottom: 3px solid var(--green); background: white; }
+
+  /* MAIN */
+  .main { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 16px; box-shadow: var(--shadow); overflow: hidden; }
+  .card-header { padding: 14px 18px; cursor: pointer; display: flex; align-items: center; gap: 12px; user-select: none; }
+  .card-header:hover { background: var(--gray-light); }
+  .card-chevron { font-size: 12px; color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; }
+  .card.open .card-chevron { transform: rotate(90deg); }
+  .card-title { font-size: 15px; font-weight: 600; flex: 1; }
+  .card-body { padding: 0 18px 16px 18px; display: none; }
+  .card.open .card-body { display: block; }
+  .card-body p { margin-bottom: 10px; font-size: 14px; color: var(--gray); }
+  .card-body ul { margin: 8px 0 12px 20px; font-size: 14px; color: var(--gray); }
+  .card-body li { margin-bottom: 4px; }
+
+  /* STATUS BADGES */
+  .badge { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 12px; white-space: nowrap; flex-shrink: 0; }
+  .badge-decided { background: var(--green-light); color: var(--green); }
+  .badge-open { background: var(--gold-light); color: var(--gold); }
+  .badge-conflict { background: var(--red-light); color: var(--red); }
+  .badge-info { background: var(--blue-light); color: var(--blue); }
+  .badge-action { background: var(--orange-light); color: var(--orange); }
+
+  /* SOURCE TAGS */
+  .source-tag { font-size: 10px; padding: 2px 7px; border-radius: 3px; font-weight: 500; margin-left: 4px; }
+  .source-slack { background: #e8d5f5; color: #6b21a8; }
+  .source-granola { background: #d1fae5; color: #065f46; }
+  .source-drive { background: #dbeafe; color: #1e40af; }
+  .source-gmail { background: #fee2e2; color: #991b1b; }
+  .source-web { background: #f3f4f6; color: #374151; }
+  .sources-row { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+
+  /* DECISION TABLE */
+  .decision-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .decision-table th { text-align: left; padding: 10px 12px; background: var(--gray-light); font-weight: 600; border-bottom: 2px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+  .decision-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .decision-table tr:hover { background: var(--gray-light); }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .tl-item { position: relative; margin-bottom: 20px; padding-left: 16px; }
+  .tl-item::before { content: ''; position: absolute; left: -20px; top: 6px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--green); background: white; }
+  .tl-date { font-size: 12px; font-weight: 600; color: var(--green); margin-bottom: 2px; }
+  .tl-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .tl-desc { font-size: 13px; color: var(--text-muted); }
+  .tl-item.conflict::before { border-color: var(--red); }
+  .tl-item.decided::before { border-color: var(--green); background: var(--green); }
+
+  /* SCHEDULE VISUAL */
+  .schedule-block { display: flex; border-left: 4px solid var(--green); margin-bottom: 8px; background: white; border-radius: 0 6px 6px 0; border: 1px solid var(--border); border-left: 4px solid var(--green); }
+  .schedule-time { width: 90px; padding: 10px 12px; font-weight: 700; font-size: 13px; color: var(--green); background: var(--green-light); flex-shrink: 0; display: flex; align-items: center; }
+  .schedule-content { padding: 10px 14px; flex: 1; font-size: 13px; }
+  .schedule-content strong { display: block; margin-bottom: 2px; }
+  .schedule-content .detail { color: var(--text-muted); font-size: 12px; }
+  .schedule-block.kenwood { border-left-color: var(--maroon); }
+  .schedule-block.kenwood .schedule-time { color: var(--maroon); background: var(--maroon-light); }
+  .schedule-block.evergreen { border-left-color: var(--green); }
+  .schedule-block.both { border-left-color: var(--gold); }
+  .schedule-block.both .schedule-time { color: var(--gold); background: var(--gold-light); }
+
+  /* STAT ROW */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .stat-card { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; box-shadow: var(--shadow); }
+  .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600; }
+  .stat-value { font-size: 28px; font-weight: 700; color: var(--green); margin-top: 4px; }
+  .stat-note { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* INSIGHT CALLOUT */
+  .callout { padding: 14px 18px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
+  .callout-warn { background: var(--gold-light); border-left: 4px solid var(--gold); }
+  .callout-alert { background: var(--red-light); border-left: 4px solid var(--red); }
+  .callout-info { background: var(--blue-light); border-left: 4px solid var(--blue); }
+  .callout-success { background: var(--green-light); border-left: 4px solid var(--green); }
+  .callout strong { display: block; margin-bottom: 4px; }
+
+  /* FILTER BAR */
+  .filter-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filter-btn { font-size: 12px; padding: 5px 12px; border-radius: 16px; border: 1px solid var(--border); background: white; cursor: pointer; font-weight: 500; transition: all 0.15s; }
+  .filter-btn:hover, .filter-btn.active { background: var(--green); color: white; border-color: var(--green); }
+
+  .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+  .section-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* COMPARISON TABLE */
+  .comparison-row { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .comparison-row.highlight { background: var(--green-light); }
+  .comparison-row.new { background: var(--gold-light); }
+  .comparison-col { }
+  .comparison-col strong { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 6px; }
+  .comparison-col p { font-size: 13px; }
+
+  /* ACTION ITEM LIST */
+  .action-section { margin-bottom: 24px; }
+  .action-section h3 { font-size: 14px; font-weight: 700; background: var(--gray-light); padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; }
+  .action-item { background: white; border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; margin-bottom: 10px; font-size: 13px; }
+  .action-item strong { display: block; margin-bottom: 2px; }
+  .action-item .owner { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+
+  /* PRINT */
+  @media print { .header { position: static; } .nav { display: none; } .panel { display: block !important; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Visiting Day 2026 Dashboard</h1>
+  <div class="header-sub">Camps Kenwood & Evergreen - Saturday, July 18, 2026 | 9:00 AM - 3:00 PM</div>
+  <div class="header-meta">
+    <span>Lead: Jack (roving)</span>
+    <span>Staffing: Violet</span>
+    <span>Banners: Mariel</span>
+    <span>Compiled: March 18, 2026</span>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nav-tab active" data-panel="overview">Overview</button>
+  <button class="nav-tab" data-panel="schedule">Schedule</button>
+  <button class="nav-tab" data-panel="comparison">2025 vs 2026</button>
+  <button class="nav-tab" data-panel="decisions">Decisions</button>
+  <button class="nav-tab" data-panel="action-items">Action Items</button>
+  <button class="nav-tab" data-panel="sources">Sources</button>
+</div>
+
+<div class="main">
+
+<!-- ========== OVERVIEW ========== -->
+<div class="panel active" id="overview">
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label">Decisions Made</div>
+      <div class="stat-value" style="color: var(--green);">12</div>
+      <div class="stat-note">Ready to execute</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Action Items</div>
+      <div class="stat-value" style="color: var(--gold);">4</div>
+      <div class="stat-note">Parking, Staffing, Website, Activity</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Key Changes from 2025</div>
+      <div class="stat-value">6</div>
+      <div class="stat-note">Major shifts in structure</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Non-visitor Kids</div>
+      <div class="stat-value">~15</div>
+      <div class="stat-note">Adventure Dave trip</div>
+    </div>
+  </div>
+
+  <div class="callout callout-success">
+    <strong>The Big Shift: Parents Go Straight to Bunks at 9 AM</strong>
+    Kids are waiting. Counselors are there. The first moment is a family moment. This changes the entire rhythm of Visiting Day. Instead of parents arriving to watch activities, they arrive to connect with their kid in their actual living space.
+  </div>
+
+  <div class="callout callout-info">
+    <strong>Welcome Packet Template Ready</strong>
+    The packet template is complete and ready for DLs and counselors to fill out during training week. Template includes schedule, map, area guides, counselor bios, and conversation starters. Mariel will design and print off-site. This needs to be on her schedule by early June.
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>3:30-5:30 PM Post-Departure Activity TBD</strong>
+    After kids return to bunks at 3:00 PM departure, we need a fun activity to fill this window before dinner. Something engaging to ease re-separation. This is flagged as an open item.
+  </div>
+
+  <div class="callout callout-warn">
+    <strong>Website Copy Needs Update</strong>
+    Parent Resource Center still has outdated language. Policy is same as last year. No tote bags, no restrictions. This needs to be updated by early June.
+  </div>
+
+  <div class="section-title" style="margin-top: 24px;">Core Concept & Content</div>
+
+  <div class="card open">
+    <div class="card-header" onclick="toggleCard(this)">
+      <span class="card-chevron">&#9654;</span>
+      <span class="card-title">What Parents Will Experience</span>
+      <span class="badge badge-info">PARENT JOURNEY</span>
+    </div>
+    <div class="card-body">
+      <p><strong>9:00 AM: Arrival and Welcome</strong></p>
+      <p>Parents arrive at one of three welcome tents (FOD, Gym, or EBF entrance). They receive a welcome packet with bunk information, counselor bios, printed unit photos, suggested questions to ask their kid, the day's schedule, and a camp map. Printed welcome banners greet them at the entrances. Staff is welcoming and oriented. They head straight to their child's bunk.</p>
+
+      <p><strong>At the Bunk</strong></p>
+      <p>Their child is there, ready and excited. Counselors greet parents, introduce themselves, and give a quick bunk tour. This is the counselor trust-building moment. Parents meet the people caring for their kid in the kid's actual living space. This sets the tone for the entire visit.</p>
+
+      <p><strong>10:30 AM: Waterfront, Studio, Woods Open</strong></p>
+      <p>All three activity areas are open. Parents and kids explore camp together. They might go tie-dye, climb the rock wall, swim, play pickleball, or just walk around the Hollow. It's their choice. This is family exploration time.</p>
+
+      <p><strong>12:30 PM: BBQ Lunch and Portraits</strong></p>
+      <p>Families head to lunch. BBQ buffet is served. Groups called up by unit. While eating, they can stop for family portraits near the dining hall. A photographer (Elliott or assigned staff) captures the moment with a K&E branded backdrop.</p>
+
+      <p><strong>1:15 PM: Jack's Announcements</strong></p>
+      <p>Jack speaks for 3-5 minutes. He thanks the parents, celebrates the summer, and previews what's next. He mentions that activities reopen, portraits continue, DL meetings are starting right now in the dining hall, and departure is at 3:00. Short and real.</p>
+
+      <p><strong>1:20 PM: DL Meetings + Hut 6/Juniper Parent Meeting</strong></p>
+      <p>Feeds directly from Jack's announcements. DLs sit at tables in the Dining Hall with signs above their heads for each division. Parents can sit with their kid's DL, ask questions, meet other families in the division. Hut 6 and Juniper parent meeting happens simultaneously in the same space. Casual, open format. Come and go as you like.</p>
+
+      <p><strong>1:30 PM: Activities Reopen</strong></p>
+      <p>Waterfront, Studio, and Woods open again. Same setup as 10:30. Portraits continue until 2:30. It's a flexible afternoon.</p>
+
+      <p><strong>3:00 PM: Goodbye and Departure</strong></p>
+      <p>Announcements go out: "It's time to say goodbye. Counselors, please take your campers back to the bunk." Parents walk to the parking lot. Kids go with counselors. Clean break. No lingering. The goodbye is the hardest part. A structured, clear departure means less pain.</p>
+
+      <p><strong>Evening: Post-Departure</strong></p>
+      <p>Kids go back to bunks with counselors for chill time. A planned activity from 3:30-5:30 PM. Dinner at 5:30. Free play in the Hollow and compounds. Movie night in the gym. Something fun to ease the re-separation.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <span class="card-chevron">&#9654;</span>
+      <span class="card-title">What's Different This Year</span>
+      <span class="badge badge-action">KEY SHIFTS</span>
+    </div>
+    <div class="card-body">
+      <p><strong>1. Parents Go Straight to Bunks (9:00 AM)</strong></p>
+      <p>In 2025, parents watched activities first. In 2026, kids are waiting at the bunk. Counselors are there. The first moment is a family moment, not a spectator moment. Parent feedback said new families felt lost. Industry research says the number one thing parents want is quality time with their kid. This gives it to them immediately.</p>
+
+      <p><strong>2. Waterfront, Studio, Woods Open (not activities)</strong></p>
+      <p>At 10:30 AM and 1:30 PM, we list specific activity areas instead of generic "activities open." All areas are open and available for families to choose. Studio (tie-dye, crafts, ceramics), Woods (high ropes, rock wall, archery, pickleball), Waterfront (swimming, inflatable, canoeing, SUP), and free play areas (Hollow, compounds, fields).</p>
+
+      <p><strong>3. Welcome Packets with Counselor Info</strong></p>
+      <p>Instead of a generic printed info sheet, packets include bunk details, counselor bios, unit photos from the first three weeks, and suggested questions to ask their kid. This helps new families feel less lost and gives them conversation starters.</p>
+
+      <p><strong>4. DL Meetings Right After Announcements (1:20 PM)</strong></p>
+      <p>New for 2026. Jack announces at 1:15. DL meetings start immediately at 1:20, feeding right in. Division leaders sit in the Dining Hall with signs above their heads. Parents can sit with their kid's DL, ask questions, get oriented. Hut 6 and Juniper (third-year seniors) have their own parent meeting simultaneously. More accessible than a formal presentation.</p>
+
+      <p><strong>5. Departure at 3:00 PM</strong></p>
+      <p>30 minutes earlier than 2025. Industry research says the goodbye is the hardest part. A cleaner, earlier departure means less lingering and less pain. Counselors take kids back to bunks at 3:00. Clean break.</p>
+
+      <p><strong>6. Post-Departure Activity 3:30-5:30 PM</strong></p>
+      <p>Something planned for the evening. A fun activity to ease re-separation after parents leave. Then dinner at 5:30, free play, and movie night in the gym. Industry best practice is a big activity after parents leave. This eases the transition for kids.</p>
+
+      <p><strong>7. Dave Departs 8:30 AM</strong></p>
+      <p>Non-visitor kids (~15) go with Adventure Dave before parents arrive. Hike, ice cream, lake excursion. They get something exclusively theirs. They feel special, not left behind.</p>
+
+      <p><strong>8. Welcome Banners at Gates</strong></p>
+      <p>Mariel designs and produces printed welcome banners at each entrance and branded backdrop for family portraits. Not just signs. Real banners to set the tone and make it feel festive. Geof moves extra picnic tables to the assembly area for lunch.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <span class="card-chevron">&#9654;</span>
+      <span class="card-title">Special Situations</span>
+      <span class="badge badge-info">EXCEPTIONS & CARE</span>
+    </div>
+    <div class="card-body">
+      <p><strong>Kids Without Visiting Parents (~15)</strong></p>
+      <p>Adventure Dave takes non-visitor kids on a trip off-campus. Hike, ice cream run, lake excursion. They get something exclusively theirs. They feel special, not left behind. Dave needs a plan and supplies. Departure at 8:30 AM, before gates open.</p>
+
+      <p><strong>Rookie Week Overlap</strong></p>
+      <p>Rookie campers with full-season siblings can stay overnight Friday and get picked up Saturday morning during Visiting Day. Standard Rookie pickup is Friday July 17 at 2 PM. This allows new families to experience the community and see their sibling on Visiting Day.</p>
+
+      <p><strong>Friday Night: Pre-Visiting Day</strong></p>
+      <p>Suggest a spot in the parent info sheet. Something like: "Many families gather Friday evening at [restaurant]. No RSVP needed, just show up if you're in town." Zero camp staff effort. Pick the specific restaurant closer to summer.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SCHEDULE ========== -->
+<div class="panel" id="schedule">
+  <div class="section-title">2026 Visiting Day Schedule</div>
+  <div class="section-subtitle">9:00 AM to 3:00 PM. Color indicates scope: gold = both camps, green = Evergreen-specific, maroon = Kenwood-specific.</div>
+
+  <div class="schedule-block both">
+    <div class="schedule-time">8:30 AM</div>
+    <div class="schedule-content">
+      <strong>Adventure Dave Departs</strong>
+      <div class="detail">~15 non-visitor kids leave campus for off-campus trip (hike, ice cream, lake excursion). Back by 3:30 PM for post-departure activity.</div>
+    </div>
+  </div>
+
+  <div class="schedule-block both">
+    <div class="schedule-time">9:00 AM</div>
+    <div class="schedule-content">
+      <strong>Gates Open / Parents Go Straight to Bunks</strong>
+      <div class="detail">Printed welcome banners at each entrance. Welcome tents at FOD, Gym, and EBF. Hand out welcome packets by unit. Kids already in bunks, waiting with counselors.</div>
+    </div>
+  </div>
+
+  <div class="schedule-block both">
+    <div class="schedule-time">10:30 AM</div>
+    <div class="schedule-content">
+      <strong>Waterfront, Studio, Woods Open</strong>
+      <div class="detail">Studio: Tie-dye, Crafts, Ceramics | Woods: High Ropes, Rock Wall, Archery, Pickleball | Waterfront: Swimming, Inflatable, Canoeing, SUP | Free play: Hollow, compounds, fields</div>
+    </div>
+  </div>
+
+  <div class="schedule-block both">
+    <div class="schedule-time">11:45 AM</div>
+    <div class="schedule-content">
+      <strong>Junior Camp Play @ Tent</strong>
+      <div class="detail">Short, high-energy performance. Families love watching their younger kids showcase.</div>
+    </div>
+  </div>
+
+  <div class="schedule-block both" style="border-left-color: var(--gray);">
+    <div class="schedule-time" style="color: var(--gray); background: var(--gray-light);">12:00 PM</div>
+    <div class="schedule-content">
+      <strong>Activities Close / Free Time</strong>
+      <div class="detail">Families make their way toward lunch area naturally. No programming. Let people breathe.</div>
+    </div>
+  </div>
+
+  <div class="schedule-block both">
+    <div class="schedule-time">12:30 PM</div>
+    <div class="schedule-content">
+      <strong>BBQ Buffet Lunch + Family Portraits + Re-enrollment Table</strong>
+      <div class="detail">Groups called up by unit. Portraits near dining hall with branded backdrop. Re-enrollment table open. Merch incentive for families who enroll on VD.</div>
+    </div>
+  </div>
+
+  <div class="schedule-block both">
+    <div class="schedule-time">1:15 PM</div>
+    <div class="schedule-content">
+      <strong>Jack's Announcements</strong>
+      <div class="detail">3-5 minutes. Thank parents, celebrate summer, transition to afternoon. Mention activities reopen, portraits, DL meetings starting now, departure at 3:00.</div>
+    </div>
+  </div>
+
+  <div class="schedule-block both">
+    <div class="schedule-time">1:20 PM</div>
+    <div class="schedule-content">
+      <strong>DL Meetings + Hut 6/Juniper Parent Meeting (Dining Hall)</strong>
+      <div class="detail">Right after announcements. DLs sit at tables with division signs. Parents sit with their kid's DL, ask questions, meet other families. Hut 6 and Juniper meet simultaneously. Casual format, come and go.</div>
+    </div>
+  </div>
+
+  <div class="schedule-block both">
+    <div class="schedule-time">1:30 PM</div>
+    <div class="schedule-content">
+      <strong>Waterfront, Studio, Woods Reopen</strong>
+      <div class="detail">All activity areas open again. Portraits continue until 2:30. Same setup as 10:30 AM.</div>
+    </div>
+  </div>
+
+  <div class="schedule-block both" style="border-left-color: var(--gray);">
+    <div class="schedule-time" style="color: var(--gray); background: var(--gray-light);">3:00 PM</div>
+    <div class="schedule-content">
+      <strong>DEPARTURE - Counselors Take Kids to Bunks</strong>
+      <div class="detail">Clear goodbye process. Structured counselor handoff. Clean break. Parents walk to parking lot.</div>
+    </div>
+  </div>
+
+  <div class="schedule-block both" style="border-left-color: var(--gold);">
+    <div class="schedule-time" style="color: var(--gold); background: var(--gold-light);">3:30-5:30 PM</div>
+    <div class="schedule-content">
+      <strong>Activity TBD</strong>
+      <div class="detail">Post-departure activity to fill this window before dinner. Something engaging to ease re-separation. Open item.</div>
+    </div>
+  </div>
+
+  <div class="schedule-block both">
+    <div class="schedule-time">5:30 PM</div>
+    <div class="schedule-content">
+      <strong>Dinner</strong>
+      <div class="detail">Regular dinner service. Post-departure routine.</div>
+    </div>
+  </div>
+
+  <div class="schedule-block both" style="border-left-color: var(--gray);">
+    <div class="schedule-time" style="color: var(--gray); background: var(--gray-light);">Evening</div>
+    <div class="schedule-content">
+      <strong>Free Play Then Movie Night in Gym</strong>
+      <div class="detail">Hollow and compound areas open for free play. Movie night in the gym for those who want it.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== COMPARISON ========== -->
+<div class="panel" id="comparison">
+  <div class="section-title">2025 vs 2026 Comparison</div>
+  <div class="section-subtitle">Side-by-side what changed. Green = improvements, gold = new additions.</div>
+
+  <div class="comparison-row">
+    <div class="comparison-col">
+      <strong>Area</strong>
+      <p>First Moment</p>
+    </div>
+    <div class="comparison-col">
+      <strong>2025</strong>
+      <p>Parents watch activities, go to bunk at 10:00 AM</p>
+    </div>
+    <div class="comparison-col highlight">
+      <strong>2026</strong>
+      <p>Parents straight to bunk at 9:00 AM</p>
+    </div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-col">
+      <strong>Area</strong>
+      <p>Non-Visitor Kids</p>
+    </div>
+    <div class="comparison-col">
+      <strong>2025</strong>
+      <p>N/A</p>
+    </div>
+    <div class="comparison-col new">
+      <strong>2026</strong>
+      <p>Dave departs 8:30 AM with ~15 kids for off-campus trip</p>
+    </div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-col">
+      <strong>Area</strong>
+      <p>Welcome Experience</p>
+    </div>
+    <div class="comparison-col">
+      <strong>2025</strong>
+      <p>Printed info sheet</p>
+    </div>
+    <div class="comparison-col highlight">
+      <strong>2026</strong>
+      <p>Printed banners + packet with schedule, map, area guides, bios, questions</p>
+    </div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-col">
+      <strong>Area</strong>
+      <p>Activities</p>
+    </div>
+    <div class="comparison-col">
+      <strong>2025</strong>
+      <p>Assigned by division</p>
+    </div>
+    <div class="comparison-col highlight">
+      <strong>2026</strong>
+      <p>Free choice: Waterfront, Studio, Woods (explicitly listed)</p>
+    </div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-col">
+      <strong>Area</strong>
+      <p>Parent-Child Games</p>
+    </div>
+    <div class="comparison-col">
+      <strong>2025</strong>
+      <p>Structured by division at 2:30 PM</p>
+    </div>
+    <div class="comparison-col highlight">
+      <strong>2026</strong>
+      <p>Cut. Replaced with open activity time</p>
+    </div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-col">
+      <strong>Area</strong>
+      <p>All Camp Gathering</p>
+    </div>
+    <div class="comparison-col">
+      <strong>2025</strong>
+      <p>1:00 PM at Hollow</p>
+    </div>
+    <div class="comparison-col highlight">
+      <strong>2026</strong>
+      <p>Replaced with short announcements at 1:15 PM</p>
+    </div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-col">
+      <strong>Area</strong>
+      <p>DL Meetings</p>
+    </div>
+    <div class="comparison-col">
+      <strong>2025</strong>
+      <p>N/A</p>
+    </div>
+    <div class="comparison-col new">
+      <strong>2026</strong>
+      <p>1:20 PM in Dining Hall (right after announcements) with division signs</p>
+    </div>
+  </div>
+
+  <div class="comparison-row new">
+    <div class="comparison-col">
+      <strong>Area</strong>
+      <p>Pickleball</p>
+    </div>
+    <div class="comparison-col">
+      <strong>2025</strong>
+      <p>N/A</p>
+    </div>
+    <div class="comparison-col">
+      <strong>2026</strong>
+      <p>Added to Woods activities</p>
+    </div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-col">
+      <strong>Area</strong>
+      <p>Departure Time</p>
+    </div>
+    <div class="comparison-col">
+      <strong>2025</strong>
+      <p>3:30 PM</p>
+    </div>
+    <div class="comparison-col highlight">
+      <strong>2026</strong>
+      <p>3:00 PM</p>
+    </div>
+  </div>
+
+  <div class="comparison-row">
+    <div class="comparison-col">
+      <strong>Area</strong>
+      <p>Post-Departure Activity</p>
+    </div>
+    <div class="comparison-col">
+      <strong>2025</strong>
+      <p>Nothing planned</p>
+    </div>
+    <div class="comparison-col new">
+      <strong>2026</strong>
+      <p>Activity 3:30-5:30 PM, then dinner, free play, movie night</p>
+    </div>
+  </div>
+
+  <div class="comparison-row new">
+    <div class="comparison-col">
+      <strong>Area</strong>
+      <p>Family Portraits</p>
+    </div>
+    <div class="comparison-col">
+      <strong>2025</strong>
+      <p>Campfire area at 1:30 PM</p>
+    </div>
+    <div class="comparison-col">
+      <strong>2026</strong>
+      <p>Dining hall, branded backdrop (Mariel), 12:30-2:30 PM</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== DECISIONS ========== -->
+<div class="panel" id="decisions">
+  <div class="section-title">Decision Tracker</div>
+  <div class="section-subtitle">All decisions from the 2026 plan. Decided items are locked. Open items need resolution.</div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterDecisions('all', this)">All</button>
+    <button class="filter-btn" onclick="filterDecisions('decided', this)">Decided</button>
+    <button class="filter-btn" onclick="filterDecisions('open', this)">Open</button>
+  </div>
+
+  <table class="decision-table">
+    <thead>
+      <tr>
+        <th style="width:30%">Decision</th>
+        <th style="width:10%">Status</th>
+        <th style="width:40%">Details</th>
+        <th style="width:20%">Owner</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-status="decided">
+        <td><strong>Bunk-first at 9 AM</strong></td>
+        <td><span class="badge badge-decided">DECIDED</span></td>
+        <td>Parents go straight to bunks. Kids waiting. Counselors there. Family moment, not spectator moment.</td>
+        <td>Jack</td>
+      </tr>
+      <tr data-status="decided">
+        <td><strong>Dave departs 8:30 AM with non-visitor kids</strong></td>
+        <td><span class="badge badge-decided">DECIDED</span></td>
+        <td>~15 non-visitor kids. Off-campus trip (hike, ice cream, lake). They feel special, not left behind.</td>
+        <td>Dave</td>
+      </tr>
+      <tr data-status="decided">
+        <td><strong>Waterfront, Studio, Woods explicitly listed at 10:30 AM and 1:30 PM</strong></td>
+        <td><span class="badge badge-decided">DECIDED</span></td>
+        <td>Three areas open for families to freely choose. Not assigned by division. Explicitly label the three areas.</td>
+        <td>Jack / Violet</td>
+      </tr>
+      <tr data-status="decided">
+        <td><strong>No tote bags, same food policy</strong></td>
+        <td><span class="badge badge-decided">DECIDED</span></td>
+        <td>Same as last year. No tote bags. No new restrictions. Parent Resource Center copy needs update.</td>
+        <td>Jack</td>
+      </tr>
+      <tr data-status="decided">
+        <td><strong>BBQ lunch</strong></td>
+        <td><span class="badge badge-decided">DECIDED</span></td>
+        <td>BBQ Buffet at 12:30 PM. Groups called up by unit. Worked in 2025.</td>
+        <td>Jack / Kitchen</td>
+      </tr>
+      <tr data-status="decided">
+        <td><strong>Shaun at welcome tent (Gym entrance)</strong></td>
+        <td><span class="badge badge-decided">DECIDED</span></td>
+        <td>Parent-facing role. New stretch for him. Station him at welcome tent. Right decision for his growth.</td>
+        <td>Shaun / Jack</td>
+      </tr>
+      <tr data-status="decided">
+        <td><strong>DL meetings right after announcements at 1:20 PM</strong></td>
+        <td><span class="badge badge-decided">DECIDED</span></td>
+        <td>Feeds directly from Jack's 1:15 announcements. DLs sit in Dining Hall with division signs. Hut 6/Juniper meet simultaneously. Casual, accessible format.</td>
+        <td>Jack / DLs</td>
+      </tr>
+      <tr data-status="decided">
+        <td><strong>Family portraits near dining hall with branded backdrop</strong></td>
+        <td><span class="badge badge-decided">DECIDED</span></td>
+        <td>12:30-2:30 PM window. Mariel handles branded backdrop. Photographer roving and stationed. K&E sign.</td>
+        <td>Mariel / Jack</td>
+      </tr>
+      <tr data-status="decided">
+        <td><strong>Departure at 3:00 PM</strong></td>
+        <td><span class="badge badge-decided">DECIDED</span></td>
+        <td>Cleaner, earlier departure. Less lingering. Counselors take kids to bunks. Clean break.</td>
+        <td>Jack</td>
+      </tr>
+      <tr data-status="decided">
+        <td><strong>Post-departure bunks, free play, movie night</strong></td>
+        <td><span class="badge badge-decided">DECIDED</span></td>
+        <td>After 3:00 PM departure. Chill time in bunks. Activity from 3:30-5:30. Dinner. Free play. Movie night in gym.</td>
+        <td>Violet</td>
+      </tr>
+      <tr data-status="decided">
+        <td><strong>Welcome banners at gates</strong></td>
+        <td><span class="badge badge-decided">DECIDED</span></td>
+        <td>Printed banners (not just signs) at entrances. Sets festive tone. Mariel designs and produces.</td>
+        <td>Mariel</td>
+      </tr>
+      <tr data-status="decided">
+        <td><strong>Jack roves, no station</strong></td>
+        <td><span class="badge badge-decided">DECIDED</span></td>
+        <td>Jack is visible throughout. Talks to parents. The face of camp. Not tied to one location.</td>
+        <td>Jack</td>
+      </tr>
+      <tr data-status="open">
+        <td><strong>3:30-5:30 PM Activity</strong></td>
+        <td><span class="badge badge-open">OPEN</span></td>
+        <td>Post-departure activity before dinner. Needs to be fun and engaging to ease re-separation. Open item.</td>
+        <td>Violet / Jack</td>
+      </tr>
+      <tr data-status="open">
+        <td><strong>Parking plan</strong></td>
+        <td><span class="badge badge-open">OPEN</span></td>
+        <td>Pickleball courts going in where families parked in 2025. Sue needs new plan with overflow and traffic direction. Golf cart service for grandparents/accessibility.</td>
+        <td>Sue</td>
+      </tr>
+      <tr data-status="open">
+        <td><strong>Staffing assignments</strong></td>
+        <td><span class="badge badge-open">OPEN</span></td>
+        <td>Violet owns the table. Belayers, lifeguards, studio staff, archery instructor, pickleball, DL meeting logistics, movie night setup, etc.</td>
+        <td>Violet</td>
+      </tr>
+      <tr data-status="open">
+        <td><strong>Website copy fix</strong></td>
+        <td><span class="badge badge-open">OPEN</span></td>
+        <td>Parent Resource Center needs update. Remove outdated language. Policy is same as last year. No tote bags.</td>
+        <td>Sue</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ========== ACTION ITEMS ========== -->
+<div class="panel" id="action-items">
+  <div class="section-title">Action Items</div>
+  <div class="section-subtitle">Things that need to happen before Visiting Day. Organized by timeline.</div>
+
+  <div class="action-section">
+    <h3>By Early June (Pre-Camp Planning)</h3>
+
+    <div class="action-item">
+      <strong>Mariel: Printed welcome banners and branded portrait backdrop</strong>
+      <p>Design and produce printed banners for gates (FOD, Gym, EBF entrances). Branded backdrop for family portraits near dining hall. K&E sign.</p>
+      <div class="owner">Owner: Mariel</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Sue: New parking plan</strong>
+      <p>Account for pickleball courts replacing old parking area. Include overflow and traffic direction. Golf cart service for grandparents/accessibility.</p>
+      <div class="owner">Owner: Sue</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Geof: Move picnic tables to assembly area</strong>
+      <p>Move extra picnic tables around the assembly area before the day to make it feel like a gathering spot for lunch, not a cafeteria line.</p>
+      <div class="owner">Owner: Geof</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Sylvia: Update Parent Resource Center website copy</strong>
+      <p>Remove outdated language. Policy is same as last year. No tote bags, no restrictions.</p>
+      <div class="owner">Owner: Sylvia</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Violet: Fill staffing table</strong>
+      <p>Assign names to all roles. Welcome tents, parking, photographer, golf cart, activities, meetings, re-enrollment, movie night setup.</p>
+      <div class="owner">Owner: Violet</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Jack & Mariel: Build packet form for DLs/counselors</strong>
+      <p>Create fillable form for training week. Includes bunk name, division, division leader, counselor names/hometowns/fun facts, questions to ask campers, anything else parents should know.</p>
+      <div class="owner">Owner: Jack & Mariel</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Mariel: Design and print packets off-site</strong>
+      <p>Get it on her schedule early. She needs time for design, printing, coordination with DLs for counselor info and unit photos.</p>
+      <div class="owner">Owner: Mariel</div>
+    </div>
+  </div>
+
+  <div class="action-section">
+    <h3>During Training Week (June 14-24)</h3>
+
+    <div class="action-item">
+      <strong>DLs/Counselors: Fill out packet form</strong>
+      <p>Bunk info, counselor bios, unit photos, suggested questions to ask kids. Submitted to Mariel for inclusion in packets.</p>
+      <div class="owner">Owner: DLs/Counselors</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Print unit photos on-site</strong>
+      <p>Photos from first three weeks, printed on-site, added to packets. Coordinate with office/admin team.</p>
+      <div class="owner">Owner: Admin Team</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Brief all staff on Visiting Day roles</strong>
+      <p>Clear, direct overview of each person's role. Q&A. Make sure everyone knows what success looks like.</p>
+      <div class="owner">Owner: Jack & Violet</div>
+    </div>
+  </div>
+
+  <div class="action-section">
+    <h3>Week Before VD (July 12-17)</h3>
+
+    <div class="action-item">
+      <strong>Send parent info sheet</strong>
+      <p>Schedule, map, food policy, Friday night restaurant suggestion, parking details, welcome tent locations.</p>
+      <div class="owner">Owner: Jack / Sue</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Confirm Adventure Dave trip plan</strong>
+      <p>~15 non-visitor kids. Off-campus destination, timing, supplies, contingency. Confirm Dave's readiness and transportation.</p>
+      <div class="owner">Owner: Dave & Jack</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Plan 3:30-5:30 PM post-departure activity</strong>
+      <p>Design something fun and engaging to ease re-separation. Get Violet's input and staff assignment.</p>
+      <div class="owner">Owner: Jack / Violet</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Set up re-enrollment table plan</strong>
+      <p>Coordinate with office team. Location near lunch. Free merch incentive. Staff assignment.</p>
+      <div class="owner">Owner: Office Team & Jack</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Confirm photographer</strong>
+      <p>Elliott or assigned staff. Family portraits near dining hall, 12:30-2:30 PM. Backdrop, K&E sign, roving backup.</p>
+      <div class="owner">Owner: Jack</div>
+    </div>
+  </div>
+
+  <div class="action-section">
+    <h3>Day Before (Friday, July 17)</h3>
+
+    <div class="action-item">
+      <strong>Rookie Week standard pickup at 2 PM</strong>
+      <p>All standard rookies picked up. Those with full-season siblings stay overnight for VD.</p>
+      <div class="owner">Owner: Josh / Ali</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Set up welcome tents and signage</strong>
+      <p>FOD, Gym, EBF entrances. Banners, directional signs, maps at each tent.</p>
+      <div class="owner">Owner: Violet & Staff</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Set up portrait backdrop</strong>
+      <p>Near dining hall. K&E branded sign. Test lighting. Assign portrait staff.</p>
+      <div class="owner">Owner: Mariel & Photographer</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Brief DLs and Hut 6/Juniper on 1:20 meeting format</strong>
+      <p>Clear expectations. DLs know they sit with division signs in Dining Hall. Hut 6/Juniper know their separate meeting at 1:20-1:50 (feeds from 1:15 announcements).</p>
+      <div class="owner">Owner: Jack</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Chalk welcome signs</strong>
+      <p>Campers make them the night before. Placed at gates and key locations.</p>
+      <div class="owner">Owner: Staff & Campers</div>
+    </div>
+  </div>
+
+  <div class="action-section">
+    <h3>Day Of (Saturday, July 18)</h3>
+
+    <div class="action-item">
+      <strong>Dave departs 8:30 AM</strong>
+      <p>Non-visitor kids (~15) leave campus before parents arrive. Off-campus trip. Back by 3:30 PM for evening activities.</p>
+      <div class="owner">Owner: Adventure Dave</div>
+    </div>
+
+    <div class="action-item">
+      <strong>All staffing positions filled per Violet's table</strong>
+      <p>Welcome tents, parking, photographer, golf cart, logistics, activities, meetings, re-enrollment, movie night setup.</p>
+      <div class="owner">Owner: Violet</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Welcome packets at each tent</strong>
+      <p>Ready to hand out starting at 9:00 AM. Each tent stocked by unit.</p>
+      <div class="owner">Owner: Welcome Tent Staff</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Golf cart running</strong>
+      <p>Grandparents/accessibility service from far lots. Roving throughout day.</p>
+      <div class="owner">Owner: Golf Cart Driver</div>
+    </div>
+
+    <div class="action-item">
+      <strong>Movie night setup in gym</strong>
+      <p>Post-departure. Snacks, seating, AV setup. Something fun to ease re-separation.</p>
+      <div class="owner">Owner: Violet & Staff</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SOURCES ========== -->
+<div class="panel" id="sources">
+  <div class="section-title">Sources</div>
+  <div class="section-subtitle">Documents and references used for this dashboard.</div>
+
+  <div class="card open">
+    <div class="card-header" onclick="toggleCard(this)">
+      <span class="card-chevron">&#9654;</span>
+      <span class="card-title">Primary Sources</span>
+      <span class="source-tag source-drive">DRIVE</span>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li><strong>Visiting Day 2026 Plan</strong> (Jack Schott, March 18, 2026). The finalized plan. Complete schedule, decisions, action items, staffing table, special situations, changes from 2025.</li>
+        <li><strong>Visiting Day Welcome Packet Template</strong> (March 18, 2026). Complete template for Mariel to design. Includes welcome + schedule, camp map, area guides (Waterfront, Studio, Woods, Just Hang Out), bunk-specific pages, hidden curriculum notes, and DL/counselor fillable form.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <span class="card-chevron">&#9654;</span>
+      <span class="card-title">2025 Reference Documents</span>
+      <span class="source-tag source-drive">DRIVE</span>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>2025 Visiting Day Schedule (Baseline for 2026 planning)</li>
+        <li>2025 Visiting Day Admin Roles & Assignments</li>
+        <li>2025 Visiting Day Info Sheet (Parent-facing)</li>
+        <li>2025 Visiting Day Letter (Doug Norrie)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <span class="card-chevron">&#9654;</span>
+      <span class="card-title">Supporting Documentation</span>
+      <span class="source-tag source-drive">DRIVE</span>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>Visiting Day 2026 Planning Template (Violet Piper)</li>
+        <li>Parent Comms 2026 - Feedback Summary (Jack Schott). Item #8: "Help newer families navigate visiting day."</li>
+        <li>Parent Resource Center Articles (Sue Whalen)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <span class="card-chevron">&#9654;</span>
+      <span class="card-title">Industry Research</span>
+      <span class="source-tag source-web">WEB</span>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>Best practices from other camps on visiting day structure and parent engagement</li>
+        <li>Parent preferences: quality time over structured activities</li>
+        <li>Post-VD homesickness spike solutions: plan an exciting evening activity</li>
+        <li>Goodbye importance: structured, early departure reduces lingering and emotional difficulty</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      <span class="card-chevron">&#9654;</span>
+      <span class="card-title">Slack & Granola Discussions</span>
+      <span class="source-tag source-slack">SLACK</span>
+      <span class="source-tag source-granola">GRANOLA</span>
+    </div>
+    <div class="card-body">
+      <ul>
+        <li>Post-VD camper drop (~25 kids, ~10% reduction)</li>
+        <li>Rookie Week overlap decision (full-season siblings)</li>
+        <li>Shaun's availability and role as welcome tent staff</li>
+        <li>Food policy and tote bag discussion</li>
+        <li>Jack's notes on "big shift" philosophy</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// Tab navigation
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.panel).classList.add('active');
+  });
+});
+
+// Card toggle
+function toggleCard(header) {
+  header.closest('.card').classList.toggle('open');
+}
+
+// Decision filter
+function filterDecisions(status, btn) {
+  document.querySelectorAll('#decisions .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#decisions .decision-table tbody tr').forEach(row => {
+    if (status === 'all' || row.dataset.status === status) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+}
+</script>
+
+</body>
+</html>
